@@ -16,14 +16,24 @@ loader.load('nose2.glb', (gltf) => {
     scene.add(model);
     camera.position.z = 3;
 
-    // 鼻の幅スライダー
-    const slider = document.getElementById('nose-slider');
-    slider.addEventListener('input', (event) => {
-        const value = parseFloat(event.target.value);
-        model.traverse((child) => {
-            if (child.isMesh) {
-                child.morphTargetInfluences[0] = value; // シェイプキー調整
-            }
+    // スライダーの設定
+    const sliders = {
+        'nose-height-slider': 0, // NoseHight: シェイプキーのインデックス0
+        'nose-bridge-slider': 1, // NoseBridge: シェイプキーのインデックス1
+        'lip-thickness-slider': 2, // LipThickness: シェイプキーのインデックス2
+    };
+
+    Object.keys(sliders).forEach((sliderId) => {
+        const slider = document.getElementById(sliderId);
+        slider.addEventListener('input', (event) => {
+            const value = parseFloat(event.target.value);
+            const morphIndex = sliders[sliderId];
+
+            model.traverse((child) => {
+                if (child.isMesh && child.morphTargetInfluences) {
+                    child.morphTargetInfluences[morphIndex] = value; // シェイプキー調整
+                }
+            });
         });
     });
 });
